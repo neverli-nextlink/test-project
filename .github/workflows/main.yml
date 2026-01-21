@@ -6,7 +6,8 @@ name: CI/CD-Test
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    paths :
+      - 'docs/**/*.html'
   pull_request:
     branches: [ "main" ]
 
@@ -20,11 +21,30 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Build website
+        run: |
+          mkdir -p dist
+          cp docs/index.html dist/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: dist/
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+  
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
+    
+    #check index.html file continue-on-error: 
+      - name: Check index.html exists
+        run : test -f docs/index.html 
+          
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
